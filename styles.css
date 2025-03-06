@@ -1,25 +1,33 @@
 :root {
-  --electric-blue: #3a0ca3;
-  --neon-purple: #7209b7;
-  --vibrant-pink: #f72585;
-  --modern-turquoise: #4cc9f0;
-  --deep-gray: #d6e2f0;
+  --primary-color: #2d1b4e;
+  --secondary-color: #7c3aed;
+  --accent-color: #f472b6;
+  --background-light: #f8fafc;
+  --text-dark: #1e293b;
+  --gradient-primary: linear-gradient(135deg, #2d1b4e, #7c3aed);
+  --gradient-accent: linear-gradient(45deg, #7c3aed, #f472b6);
 }
 
 body {
-  background-color: var(--deep-gray);
-  color: #2d3748;
+  background-color: var(--background-light);
+  color: var(--text-dark);
   font-family: "Inter", sans-serif;
+  line-height: 1.6;
 }
 
+/* Navbar moderno con efecto de cristal */
 .navbar {
-  background-color: rgba(214, 226, 240, 0.95);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 0;
 }
 
 .navbar-brand {
-  color: var(--vibrant-pink);
-  font-weight: bold;
+  font-weight: 700;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .nav-link {
@@ -79,10 +87,20 @@ section {
   border: 3px solid var(--vibrant-pink);
 }
 
-/* Estilos para la sección Tecnologías */
+/* Cards de tecnologías con diseño moderno */
 .tech-icon-wrapper {
-  text-align: center;
-  padding: 1rem;
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tech-icon-wrapper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(124, 58, 237, 0.1);
+  border-color: var(--secondary-color);
 }
 
 .tech-icon {
@@ -97,12 +115,19 @@ section {
   color: #2d3748;
 }
 
-/* Estilos para la sección Proyectos */
+/* Proyectos con diseño tipo glassmorphism */
 .project-card {
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.15);
 }
 
 .project-info {
@@ -115,19 +140,20 @@ section {
   margin-top: 1rem;
 }
 
-/* Estilos para botones */
+/* Botones modernos con gradientes */
 .btn-gradient {
-  background: linear-gradient(45deg, var(--electric-blue), var(--neon-purple));
-  border: none;
+  background: var(--gradient-primary);
   color: white;
+  border-radius: 2rem;
   padding: 0.8rem 2rem;
-  border-radius: 30px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .btn-gradient:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+  box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);
 }
 
 /* Estilos para el formulario de contacto */
@@ -144,6 +170,26 @@ section {
   box-shadow: 0 0 0 0.2rem rgba(247, 37, 133, 0.25);
 }
 
+/* Sección de tecnologías con grid moderno */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+/* Efectos de scroll suaves */
+.section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Media queries para responsive */
 @media (max-width: 768px) {
   .section-title {
@@ -154,4 +200,51 @@ section {
     width: 48px;
     height: 48px;
   }
+}
+body {
+  background: url("./images/backgroun/fondo2.png") no-repeat center center fixed;
+  background-size: cover;
+  opacity: 1.9;
+}
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 1.5rem;
+}
+.sidebar {
+  position: fixed;
+  left: -250px;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  transition: 0.3s;
+  padding-top: 60px;
+}
+.sidebar.active {
+  left: 0;
+}
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+.sidebar ul li {
+  padding: 15px;
+  text-align: center;
+}
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+.menu-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
 }

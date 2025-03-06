@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi Portfolio</title>
+    <title>Portfolio Francisco Lavin Carpanetti</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -16,7 +16,13 @@
     />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <header class="main-header">
+      <h1 class="header-title">FRANCISCO JAVIER LAVIN CARPANETTI</h1>
+      <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </header>
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <a class="navbar-brand" href="#">Portfolio</a>
         <button
@@ -44,8 +50,15 @@
           </ul>
         </div>
       </div>
+    </nav> -->
+    <nav id="sidebar" class="sidebar">
+      <ul>
+        <li><a href="#sobre-mi">Sobre Mí</a></li>
+        <li><a href="#tecnologias">Tecnologías</a></li>
+        <li><a href="#proyectos">Proyectos</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
     </nav>
-
     <main>
       <!-- Sección Sobre Mí -->
       <section id="sobre-mi" class="py-5">
@@ -343,38 +356,204 @@
         <div class="container">
           <h2 class="section-title text-center mb-5">Mis Proyectos</h2>
           <div class="row g-4">
+            <!-- Proyecto BlobeTrotterPaco -->
             <div class="col-md-6 col-lg-4">
               <div class="project-card">
                 <div class="project-images">
                   <div
-                    id="carousel1"
+                    id="carouselBlobeTrotterPaco"
                     class="carousel slide"
                     data-bs-ride="carousel"
                   >
                     <div class="carousel-inner">
                       <div class="carousel-item active">
                         <img
-                          src="assets/projects/project1-1.jpg"
+                          src="./images/BlobeTrotterPaco/home.png"
                           class="d-block w-100"
-                          alt="Proyecto 1"
+                          alt="BlobeTrotterPaco Home"
                         />
                       </div>
-                      <!-- Más imágenes del proyecto -->
+                      <div class="carousel-item">
+                        <img
+                          src="./images/BlobeTrotterPaco/idPost.png"
+                          class="d-block w-100"
+                          alt="BlobeTrotterPaco Post"
+                        />
+                      </div>
+                      <div class="carousel-item">
+                        <img
+                          src="./images/BlobeTrotterPaco/newPost.png"
+                          class="d-block w-100"
+                          alt="BlobeTrotterPaco New Post"
+                        />
+                      </div>
+                      <div class="carousel-item">
+                        <img
+                          src="./images/BlobeTrotterPaco/login.png"
+                          class="d-block w-100"
+                          alt="BlobeTrotterPaco Login"
+                        />
+                      </div>
                     </div>
+                    <button
+                      class="carousel-control-prev"
+                      type="button"
+                      data-bs-target="#carouselBlobeTrotterPaco"
+                      data-bs-slide="prev"
+                    >
+                      <span
+                        class="carousel-control-prev-icon"
+                        aria-hidden="true"
+                      ></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button
+                      class="carousel-control-next"
+                      type="button"
+                      data-bs-target="#carouselBlobeTrotterPaco"
+                      data-bs-slide="next"
+                    >
+                      <span
+                        class="carousel-control-next-icon"
+                        aria-hidden="true"
+                      ></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
                   </div>
                 </div>
                 <div class="project-info">
-                  <h3>Nombre del Proyecto</h3>
+                  <h3>BlobeTrotterPaco - Blog de Viajes</h3>
                   <p>
-                    Descripción breve del proyecto y tecnologías utilizadas.
+                    <strong>BlobeTrotterPaco</strong> es un blog de viajes
+                    moderno desarrollado con <strong>Angular 19</strong>,
+                    diseñado para compartir experiencias de viaje de manera
+                    organizada e interactiva. Permite la creación y
+                    visualización de publicaciones con imágenes, categorizadas
+                    en <em>Playa, Montaña, Ciudad, Rural y Festivales</em>.
+                    Cuenta con un
+                    <strong>diseño responsive</strong> implementado con
+                    <strong>Bootstrap 5.3</strong>, notificaciones dinámicas con
+                    <strong>SweetAlert2</strong>, y un sistema de autenticación
+                    seguro con protección de rutas. Gracias a su
+                    <strong>arquitectura modular</strong>, el manejo de datos se
+                    realiza mediante servicios centralizados, garantizando una
+                    experiencia fluida e intuitiva para el usuario.
                   </p>
+
                   <div class="project-links">
                     <a href="#" class="btn btn-outline-primary">Ver Demo</a>
-                    <a href="#" class="btn btn-outline-secondary">GitHub</a>
+                    <a
+                      href="https://github.com/FranciscoLavinCarpanetti/blobeTrotterPaco"
+                      class="btn btn-outline-secondary"
+                      >GitHub</a
+                    >
                   </div>
                 </div>
               </div>
             </div>
+            <!-- Proyecto Green Shop -->
+            <div class="col-md-6 col-lg-4">
+              <div class="project-card">
+                <div class="project-images">
+                  <div
+                    id="carouselGreenShop"
+                    class="carousel slide"
+                    data-bs-ride="carousel"
+                  >
+                    <div class="carousel-inner">
+                      <div class="carousel-item active">
+                        <img
+                          src="./images/GreenShop/home.png"
+                          class="d-block w-100"
+                          alt="Green Shop Home"
+                        />
+                      </div>
+                      <div class="carousel-item">
+                        <img
+                          src="./images/GreenShop/filtro.png"
+                          class="d-block w-100"
+                          alt="Green Shop Productos"
+                        />
+                      </div>
+                      <div class="carousel-item">
+                        <img
+                          src="./images/GreenShop/carrito.png"
+                          class="d-block w-100"
+                          alt="Green Shop Carrito de Compras"
+                        />
+                      </div>
+                      <div class="carousel-item">
+                        <img
+                          src="./images/GreenShop/stock.png"
+                          class="d-block w-100"
+                          alt="Green Shop Categorías"
+                        />
+                      </div>
+                      <div class="carousel-item">
+                        <img
+                          src="./images/GreenShop/footer.png"
+                          class="d-block w-100"
+                          alt="Green Shop Checkout"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      class="carousel-control-prev"
+                      type="button"
+                      data-bs-target="#carouselGreenShop"
+                      data-bs-slide="prev"
+                    >
+                      <span
+                        class="carousel-control-prev-icon"
+                        aria-hidden="true"
+                      ></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button
+                      class="carousel-control-next"
+                      type="button"
+                      data-bs-target="#carouselGreenShop"
+                      data-bs-slide="next"
+                    >
+                      <span
+                        class="carousel-control-next-icon"
+                        aria-hidden="true"
+                      ></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="project-info">
+                  <h3>Green Shop - E-commerce de Plantas</h3>
+                  <p>
+                    <strong>Green Shop</strong> es una tienda en línea moderna y
+                    funcional, desarrollada con
+                    <strong>HTML, CSS y JavaScript</strong>, especializada en la
+                    venta de plantas y flores. Ofrece un catálogo interactivo
+                    con productos organizados en
+                    <em>Flores Blancas, Flores de Color, Plantas y Arbustos</em
+                    >. Cuenta con un
+                    <strong>diseño responsive</strong> implementado con
+                    <strong>Bootstrap 5.3</strong>, un sistema de
+                    <strong>carrito de compras dinámico</strong>
+                    y funcionalidades interactivas en tiempo real. Gracias a su
+                    <strong>estructura modular</strong>, la gestión de productos
+                    y el estado del carrito se manejan de manera eficiente,
+                    brindando una experiencia de usuario intuitiva y fluida.
+                  </p>
+
+                  <div class="project-links">
+                    <a href="#" class="btn btn-outline-primary">Ver Demo</a>
+                    <a
+                      href="https://github.com/FranciscoLavinCarpanetti/proyecto_green_shop"
+                      class="btn btn-outline-secondary"
+                      >GitHub</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Repetir para cada proyecto -->
           </div>
         </div>
@@ -481,5 +660,12 @@
     </footer>
     <!-- Fin del Footer -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document
+        .getElementById("menuToggle")
+        .addEventListener("click", function () {
+          document.getElementById("sidebar").classList.toggle("active");
+        });
+    </script>
   </body>
 </html>
