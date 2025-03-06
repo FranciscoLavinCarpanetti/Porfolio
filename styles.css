@@ -3,17 +3,17 @@
   --neon-purple: #7209b7;
   --vibrant-pink: #f72585;
   --modern-turquoise: #4cc9f0;
-  --deep-gray: #1b1b1e;
+  --deep-gray: #d6e2f0;
 }
 
 body {
   background-color: var(--deep-gray);
-  color: #ffffff;
+  color: #2d3748;
   font-family: "Inter", sans-serif;
 }
 
 .navbar {
-  background-color: rgba(27, 27, 30, 0.95);
+  background-color: rgba(214, 226, 240, 0.95);
   backdrop-filter: blur(10px);
 }
 
@@ -23,7 +23,7 @@ body {
 }
 
 .nav-link {
-  color: #ffffff;
+  color: #2d3748;
   transition: color 0.3s ease;
 }
 
@@ -65,10 +65,11 @@ section {
 
 /* Estilos para la sección Sobre Mí */
 .profile-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 20px;
   padding: 2rem;
   backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .profile-image-container {
@@ -93,14 +94,15 @@ section {
 .tech-name {
   display: block;
   font-size: 0.9rem;
-  color: #ffffff;
+  color: #2d3748;
 }
 
 /* Estilos para la sección Proyectos */
 .project-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 15px;
   overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .project-info {
@@ -130,9 +132,9 @@ section {
 
 /* Estilos para el formulario de contacto */
 .contact-form .form-control {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #2d3748;
   padding: 0.8rem;
 }
 
