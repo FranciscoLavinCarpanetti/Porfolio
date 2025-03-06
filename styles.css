@@ -1,0 +1,155 @@
+:root {
+  --electric-blue: #3a0ca3;
+  --neon-purple: #7209b7;
+  --vibrant-pink: #f72585;
+  --modern-turquoise: #4cc9f0;
+  --deep-gray: #1b1b1e;
+}
+
+body {
+  background-color: var(--deep-gray);
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+}
+
+.navbar {
+  background-color: rgba(27, 27, 30, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+  color: var(--vibrant-pink);
+  font-weight: bold;
+}
+
+.nav-link {
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--modern-turquoise);
+}
+
+/* Estilos para secciones */
+section {
+  padding: 5rem 0;
+}
+
+/* Gradientes y efectos de fondo */
+.bg-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--electric-blue),
+    var(--neon-purple),
+    var(--vibrant-pink)
+  );
+}
+
+/* Estilos generales para secciones */
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    45deg,
+    var(--vibrant-pink),
+    var(--modern-turquoise)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Estilos para la sección Sobre Mí */
+.profile-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.profile-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 3px solid var(--vibrant-pink);
+}
+
+/* Estilos para la sección Tecnologías */
+.tech-icon-wrapper {
+  text-align: center;
+  padding: 1rem;
+}
+
+.tech-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.5rem;
+}
+
+.tech-name {
+  display: block;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+/* Estilos para la sección Proyectos */
+.project-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.project-info {
+  padding: 1.5rem;
+}
+
+.project-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Estilos para botones */
+.btn-gradient {
+  background: linear-gradient(45deg, var(--electric-blue), var(--neon-purple));
+  border: none;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 30px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+}
+
+/* Estilos para el formulario de contacto */
+.contact-form .form-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.8rem;
+}
+
+.contact-form .form-control:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--vibrant-pink);
+  box-shadow: 0 0 0 0.2rem rgba(247, 37, 133, 0.25);
+}
+
+/* Media queries para responsive */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .tech-icon {
+    width: 48px;
+    height: 48px;
+  }
+}
