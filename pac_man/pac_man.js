@@ -1,0 +1,614 @@
+// Estructura del mapa (0: vacío, 1: pared, 2: punto, 3: punto de poder, 4: posición inicial de Pac-Man, 5-8: posiciones iniciales de fantasmas)
+const MAP_CONFIG = {
+    layout: [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+        [1, 3, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 3, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+        [1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1],
+        [1, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 1],
+        [1, 1, 1, 1, 2, 1, 1, 1, 0, 1, 0, 1, 1, 1, 2, 1, 1, 1, 1],
+        [0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0],
+        [1, 1, 1, 1, 2, 1, 0, 1, 1, 0, 1, 1, 0, 1, 2, 1, 1, 1, 1],
+        [0, 0, 0, 0, 2, 0, 0, 1, 5, 6, 7, 1, 0, 0, 2, 0, 0, 0, 0],
+        [1, 1, 1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 0, 1, 2, 1, 1, 1, 1],
+        [0, 0, 0, 1, 2, 1, 0, 0, 0, 8, 0, 0, 0, 1, 2, 1, 0, 0, 0],
+        [1, 1, 1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 0, 1, 2, 1, 1, 1, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+        [1, 2, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 2, 1],
+        [1, 3, 2, 1, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 1, 2, 3, 1],
+        [1, 1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 1],
+        [1, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 1],
+        [1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ],
+    ghostColors: [
+        'var(--ghost-color-red)',
+        'var(--ghost-color-pink)',
+        'var(--ghost-color-cyan)',
+        'var(--ghost-color-orange)'
+    ],
+    cellSize: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')),
+    initialLives: 3,
+    dotValue: 10,
+    powerDotValue: 50,
+    ghostValue: 200,
+    vulnerableDuration: 10000, // 10 segundos
+    ghostSpeed: {
+        1: 2.5,
+        2: 3,
+        3: 3.5
+    },
+    pacmanSpeed: {
+        1: 3,
+        2: 3.5,
+        3: 4
+    }
+};
+
+class Game {
+    constructor() {
+        this.board = document.getElementById('game-board');
+        this.scoreEl = document.getElementById('score');
+        this.levelEl = document.getElementById('level');
+        this.livesEl = document.getElementById('lives');
+        this.startBtn = document.getElementById('start-btn');
+        this.startScreen = document.getElementById('start-screen');
+
+        this.cellSize = MAP_CONFIG.cellSize;
+        this.rows = MAP_CONFIG.layout.length;
+        this.cols = MAP_CONFIG.layout[0].length;
+        this.score = 0;
+        this.level = 1;
+        this.lives = MAP_CONFIG.initialLives;
+        this.dots = [];
+        this.powerDots = [];
+        this.walls = [];
+        this.pacman = null;
+        this.ghosts = [];
+        this.gameLoop = null;
+        this.powerMode = false;
+        this.powerModeTimer = null;
+        this.totalDots = 0;
+        this.collectedDots = 0;
+
+        this.setupEventListeners();
+        this.setupGameBoard();
+    }
+
+    setupEventListeners() {
+        this.startBtn.addEventListener('click', () => this.startGame());
+        this.board.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+    }
+
+    setupGameBoard() {
+        this.board.style.width = `${this.cols * this.cellSize}px`;
+        this.board.style.height = `${this.rows * this.cellSize}px`;
+
+        for (let row = 0; row < this.rows; row++) {
+            for (let col = 0; col < this.cols; col++) {
+                const cell = MAP_CONFIG.layout[row][col];
+                const x = col * this.cellSize;
+                const y = row * this.cellSize;
+
+                switch (cell) {
+                    case 1: // Pared
+                        this.createWall(x, y);
+                        break;
+                    case 2: // Punto
+                        this.createDot(x, y);
+                        break;
+                    case 3: // Punto de poder
+                        this.createPowerDot(x, y);
+                        break;
+                    case 4: // Posición inicial de Pac-Man
+                        this.createPacman(x, y);
+                        break;
+                    case 5: // Fantasma rojo
+                    case 6: // Fantasma rosa
+                    case 7: // Fantasma cian
+                    case 8: // Fantasma naranja
+                        this.createGhost(x, y, cell - 5);
+                        break;
+                }
+            }
+        }
+    }
+
+    createWall(x, y) {
+        const wall = document.createElement('div');
+        wall.className = 'wall';
+        wall.style.left = `${x}px`;
+        wall.style.top = `${y}px`;
+        wall.style.width = `${this.cellSize}px`;
+        wall.style.height = `${this.cellSize}px`;
+        this.board.appendChild(wall);
+        this.walls.push({ x, y, width: this.cellSize, height: this.cellSize, element: wall });
+    }
+
+    createDot(x, y) {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        dot.style.left = `${x + this.cellSize / 2 - 3}px`;
+        dot.style.top = `${y + this.cellSize / 2 - 3}px`;
+        this.board.appendChild(dot);
+        this.dots.push({ x: x + this.cellSize / 2 - 3, y: y + this.cellSize / 2 - 3, width: 6, height: 6, collected: false, element: dot });
+        this.totalDots++;
+    }
+
+    createPowerDot(x, y) {
+        const powerDot = document.createElement('div');
+        powerDot.className = 'power-dot';
+        powerDot.style.left = `${x + this.cellSize / 2 - 6}px`;
+        powerDot.style.top = `${y + this.cellSize / 2 - 6}px`;
+        this.board.appendChild(powerDot);
+        this.powerDots.push({ x: x + this.cellSize / 2 - 6, y: y + this.cellSize / 2 - 6, width: 12, height: 12, collected: false, element: powerDot });
+        this.totalDots++;
+    }
+
+    createPacman(x, y) {
+        const pacman = document.createElement('div');
+        pacman.className = 'pacman';
+        pacman.style.left = `${x + this.cellSize / 2 - this.cellSize * 0.45}px`;
+        pacman.style.top = `${y + this.cellSize / 2 - this.cellSize * 0.45}px`;
+        this.board.appendChild(pacman);
+
+        this.pacman = {
+            x: x + this.cellSize / 2 - this.cellSize * 0.45,
+            y: y + this.cellSize / 2 - this.cellSize * 0.45,
+            width: this.cellSize * 0.9,
+            height: this.cellSize * 0.9,
+            speed: MAP_CONFIG.pacmanSpeed[this.level] || MAP_CONFIG.pacmanSpeed[1],
+            direction: { x: 0, y: 0 },
+            element: pacman,
+            initialX: x + this.cellSize / 2 - this.cellSize * 0.45,
+            initialY: y + this.cellSize / 2 - this.cellSize * 0.45
+        };
+    }
+
+    createGhost(x, y, ghostIndex) {
+        const ghost = document.createElement('div');
+        ghost.className = 'ghost';
+        ghost.style.left = `${x + this.cellSize / 2 - this.cellSize * 0.45}px`;
+        ghost.style.top = `${y + this.cellSize / 2 - this.cellSize * 0.45}px`;
+        ghost.style.backgroundColor = MAP_CONFIG.ghostColors[ghostIndex];
+
+        // Añadir ojos
+        const eyes = document.createElement('div');
+        eyes.className = 'ghost-eyes';
+
+        const leftEye = document.createElement('div');
+        leftEye.className = 'ghost-eye';
+
+        const rightEye = document.createElement('div');
+        rightEye.className = 'ghost-eye';
+
+        eyes.appendChild(leftEye);
+        eyes.appendChild(rightEye);
+        ghost.appendChild(eyes);
+
+        this.board.appendChild(ghost);
+
+        this.ghosts.push({
+            x: x + this.cellSize / 2 - this.cellSize * 0.45,
+            y: y + this.cellSize / 2 - this.cellSize * 0.45,
+            width: this.cellSize * 0.9,
+            height: this.cellSize * 0.9,
+            speed: MAP_CONFIG.ghostSpeed[this.level] || MAP_CONFIG.ghostSpeed[1],
+            direction: this.getRandomDirection(),
+            element: ghost,
+            color: MAP_CONFIG.ghostColors[ghostIndex],
+            vulnerable: false,
+            initialX: x + this.cellSize / 2 - this.cellSize * 0.45,
+            initialY: y + this.cellSize / 2 - this.cellSize * 0.45
+        });
+    }
+
+    startGame() {
+        this.startScreen.style.display = 'none';
+        this.gameLoop = requestAnimationFrame(() => this.update());
+    }
+
+    resetGame() {
+        // Reiniciar posición de Pac-Man
+        this.pacman.x = this.pacman.initialX;
+        this.pacman.y = this.pacman.initialY;
+        this.pacman.element.style.left = `${this.pacman.x}px`;
+        this.pacman.element.style.top = `${this.pacman.y}px`;
+        this.pacman.direction = { x: 0, y: 0 };
+
+        // Reiniciar posición de fantasmas
+        this.ghosts.forEach(ghost => {
+            ghost.x = ghost.initialX;
+            ghost.y = ghost.initialY;
+            ghost.element.style.left = `${ghost.x}px`;
+            ghost.element.style.top = `${ghost.y}px`;
+            ghost.direction = this.getRandomDirection();
+            ghost.vulnerable = false;
+            ghost.element.style.backgroundColor = ghost.color;
+            ghost.element.classList.remove('ghost-vulnerable');
+        });
+
+        // Cancelar el modo de poder si está activo
+        if (this.powerModeTimer) {
+            clearTimeout(this.powerModeTimer);
+            this.powerModeTimer = null;
+            this.powerMode = false;
+        }
+    }
+
+    handleMouseMove(e) {
+        if (!this.pacman) return;
+
+        const rect = this.board.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Calcular la dirección hacia el cursor
+        const dx = mouseX - (this.pacman.x + this.pacman.width / 2);
+        const dy = mouseY - (this.pacman.y + this.pacman.height / 2);
+
+        // Normalizar la dirección
+        const length = Math.sqrt(dx * dx + dy * dy);
+        if (length > 0) {
+            this.pacman.direction.x = dx / length;
+            this.pacman.direction.y = dy / length;
+
+            // Rotar Pac-Man hacia la dirección del movimiento
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            this.pacman.element.style.transform = `rotate(${angle}deg)`;
+        }
+    }
+
+    update() {
+        this.movePacman();
+        this.moveGhosts();
+        this.checkCollisions();
+
+        this.gameLoop = requestAnimationFrame(() => this.update());
+    }
+
+    movePacman() {
+        const newX = this.pacman.x + this.pacman.direction.x * this.pacman.speed;
+        const newY = this.pacman.y + this.pacman.direction.y * this.pacman.speed;
+
+        // Verificar colisión con las paredes
+        const pacmanCenter = {
+            x: newX + this.pacman.width / 2,
+            y: newY + this.pacman.height / 2
+        };
+
+        let collision = false;
+
+        for (const wall of this.walls) {
+            const wallCenter = {
+                x: wall.x + wall.width / 2,
+                y: wall.y + wall.height / 2
+            };
+
+            const dx = Math.abs(pacmanCenter.x - wallCenter.x);
+            const dy = Math.abs(pacmanCenter.y - wallCenter.y);
+
+            // Ajustar las dimensiones para una detección más precisa
+            const combinedHalfWidths = (this.pacman.width * 0.4 + wall.width * 0.5) / 2;
+            const combinedHalfHeights = (this.pacman.height * 0.4 + wall.height * 0.5) / 2;
+
+            if (dx < combinedHalfWidths && dy < combinedHalfHeights) {
+                collision = true;
+                break;
+            }
+        }
+
+        if (!collision) {
+            this.pacman.x = newX;
+            this.pacman.y = newY;
+            this.pacman.element.style.left = `${newX}px`;
+            this.pacman.element.style.top = `${newY}px`;
+        }
+    }
+
+    moveGhosts() {
+        for (const ghost of this.ghosts) {
+            let newX = ghost.x + ghost.direction.x * ghost.speed;
+            let newY = ghost.y + ghost.direction.y * ghost.speed;
+
+            // Verificar colisión con las paredes
+            const ghostCenter = {
+                x: newX + ghost.width / 2,
+                y: newY + ghost.height / 2
+            };
+
+            let collision = false;
+
+            for (const wall of this.walls) {
+                const wallCenter = {
+                    x: wall.x + wall.width / 2,
+                    y: wall.y + wall.height / 2
+                };
+
+                const dx = Math.abs(ghostCenter.x - wallCenter.x);
+                const dy = Math.abs(ghostCenter.y - wallCenter.y);
+
+                const combinedHalfWidths = (ghost.width * 0.4 + wall.width * 0.5) / 2;
+                const combinedHalfHeights = (ghost.height * 0.4 + wall.height * 0.5) / 2;
+
+                if (dx < combinedHalfWidths && dy < combinedHalfHeights) {
+                    collision = true;
+                    break;
+                }
+            }
+
+            if (collision) {
+                // Si hay colisión, cambiar dirección
+                ghost.direction = this.getRandomDirection();
+            } else {
+                // Actualizar posición
+                ghost.x = newX;
+                ghost.y = newY;
+                ghost.element.style.left = `${newX}px`;
+                ghost.element.style.top = `${newY}px`;
+
+                // Probabilidad de cambiar de dirección aleatoriamente
+                if (Math.random() < 0.02) {
+                    ghost.direction = this.getRandomDirection();
+                }
+
+                // Si está vulnerable, disminuir la velocidad
+                if (ghost.vulnerable) {
+                    ghost.speed = (MAP_CONFIG.ghostSpeed[this.level] || MAP_CONFIG.ghostSpeed[1]) * 0.6;
+                } else {
+                    // Implementación simple de IA: seguir a Pac-Man si está cerca
+                    const distanceToPacman = Math.sqrt(
+                        Math.pow(ghost.x - this.pacman.x, 2) +
+                        Math.pow(ghost.y - this.pacman.y, 2)
+                    );
+
+                    if (distanceToPacman < this.cellSize * 5 && !ghost.vulnerable) {
+                        // Seguir a Pac-Man con probabilidad del 70%
+                        if (Math.random() < 0.01) {
+                            const dx = this.pacman.x - ghost.x;
+                            const dy = this.pacman.y - ghost.y;
+                            const length = Math.sqrt(dx * dx + dy * dy);
+
+                            if (length > 0) {
+                                ghost.direction.x = dx / length;
+                                ghost.direction.y = dy / length;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    checkCollisions() {
+        // Colisión con puntos
+        for (const dot of this.dots) {
+            if (!dot.collected) {
+                const dx = Math.abs((this.pacman.x + this.pacman.width / 2) - (dot.x + dot.width / 2));
+                const dy = Math.abs((this.pacman.y + this.pacman.height / 2) - (dot.y + dot.height / 2));
+
+                const combinedHalfWidths = (this.pacman.width + dot.width) / 2;
+                const combinedHalfHeights = (this.pacman.height + dot.height) / 2;
+
+                if (dx < combinedHalfWidths && dy < combinedHalfHeights) {
+                    dot.collected = true;
+                    dot.element.style.display = 'none';
+                    this.score += MAP_CONFIG.dotValue;
+                    this.scoreEl.textContent = this.score;
+                    this.collectedDots++;
+                    this.checkLevelCompletion();
+                }
+            }
+        }
+
+        // Colisión con puntos de poder
+        for (const powerDot of this.powerDots) {
+            if (!powerDot.collected) {
+                const dx = Math.abs((this.pacman.x + this.pacman.width / 2) - (powerDot.x + powerDot.width / 2));
+                const dy = Math.abs((this.pacman.y + this.pacman.height / 2) - (powerDot.y + powerDot.height / 2));
+
+                const combinedHalfWidths = (this.pacman.width + powerDot.width) / 2;
+                const combinedHalfHeights = (this.pacman.height + powerDot.height) / 2;
+
+                if (dx < combinedHalfWidths && dy < combinedHalfHeights) {
+                    powerDot.collected = true;
+                    powerDot.element.style.display = 'none';
+                    this.score += MAP_CONFIG.powerDotValue;
+                    this.scoreEl.textContent = this.score;
+                    this.collectedDots++;
+                    this.activatePowerMode();
+                    this.checkLevelCompletion();
+                }
+            }
+        }
+
+        // Colisión con fantasmas
+        for (const ghost of this.ghosts) {
+            const dx = Math.abs((this.pacman.x + this.pacman.width / 2) - (ghost.x + ghost.width / 2));
+            const dy = Math.abs((this.pacman.y + this.pacman.height / 2) - (ghost.y + ghost.height / 2));
+
+            const combinedHalfWidths = (this.pacman.width * 0.7 + ghost.width * 0.7) / 2;
+            const combinedHalfHeights = (this.pacman.height * 0.7 + ghost.height * 0.7) / 2;
+
+            if (dx < combinedHalfWidths && dy < combinedHalfHeights) {
+                if (ghost.vulnerable) {
+                    // Comer fantasma
+                    ghost.x = ghost.initialX;
+                    ghost.y = ghost.initialY;
+                    ghost.element.style.left = `${ghost.x}px`;
+                    ghost.element.style.top = `${ghost.y}px`;
+                    ghost.vulnerable = false;
+                    ghost.element.style.backgroundColor = ghost.color;
+                    ghost.element.classList.remove('ghost-vulnerable');
+                    ghost.direction = this.getRandomDirection();
+
+                    // Aumentar puntuación
+                    this.score += MAP_CONFIG.ghostValue;
+                    this.scoreEl.textContent = this.score;
+                } else {
+                    // Perder vida
+                    this.lives--;
+                    this.livesEl.textContent = this.lives;
+
+                    if (this.lives <= 0) {
+                        this.gameOver();
+                    } else {
+                        this.resetGame();
+                    }
+                }
+            }
+        }
+    }
+
+    activatePowerMode() {
+        this.powerMode = true;
+
+        // Hacer vulnerables a los fantasmas
+        this.ghosts.forEach(ghost => {
+            ghost.vulnerable = true;
+            ghost.element.classList.add('ghost-vulnerable');
+        });
+
+        // Cancelar el temporizador anterior si existe
+        if (this.powerModeTimer) {
+            clearTimeout(this.powerModeTimer);
+        }
+
+        // Establecer un temporizador para desactivar el modo de poder
+        this.powerModeTimer = setTimeout(() => {
+            this.powerMode = false;
+            this.ghosts.forEach(ghost => {
+                ghost.vulnerable = false;
+                ghost.element.style.backgroundColor = ghost.color;
+                ghost.element.classList.remove('ghost-vulnerable');
+            });
+            this.powerModeTimer = null;
+        }, MAP_CONFIG.vulnerableDuration);
+    }
+
+    checkLevelCompletion() {
+        if (this.collectedDots >= this.totalDots) {
+            // Nivel completado
+            cancelAnimationFrame(this.gameLoop);
+
+            // Crear pantalla de nivel completado
+            const levelComplete = document.createElement('div');
+            levelComplete.className = 'level-complete';
+            levelComplete.innerHTML = `
+                        <h2>¡NIVEL ${this.level} COMPLETADO!</h2>
+                        <p>Puntuación: ${this.score}</p>
+                        <button id="next-level-btn" class="btn">SIGUIENTE NIVEL</button>
+                    `;
+            this.board.appendChild(levelComplete);
+
+            // Configurar botón para siguiente nivel
+            document.getElementById('next-level-btn').addEventListener('click', () => {
+                this.nextLevel();
+                levelComplete.remove();
+            });
+        }
+    }
+
+    nextLevel() {
+        this.level++;
+        this.levelEl.textContent = this.level;
+
+        // Aumentar la velocidad
+        this.pacman.speed = MAP_CONFIG.pacmanSpeed[this.level] || MAP_CONFIG.pacmanSpeed[Object.keys(MAP_CONFIG.pacmanSpeed).length];
+
+        this.ghosts.forEach(ghost => {
+            ghost.speed = MAP_CONFIG.ghostSpeed[this.level] || MAP_CONFIG.ghostSpeed[Object.keys(MAP_CONFIG.ghostSpeed).length];
+        });
+
+        // Reiniciar puntos
+        this.dots.forEach(dot => {
+            dot.collected = false;
+            dot.element.style.display = 'block';
+        });
+
+        this.powerDots.forEach(powerDot => {
+            powerDot.collected = false;
+            powerDot.element.style.display = 'block';
+        });
+
+        this.collectedDots = 0;
+
+        // Reiniciar posiciones
+        this.resetGame();
+
+        // Reiniciar bucle de juego
+        this.gameLoop = requestAnimationFrame(() => this.update());
+    }
+
+    gameOver() {
+        cancelAnimationFrame(this.gameLoop);
+
+        // Crear pantalla de fin de juego
+        const gameOver = document.createElement('div');
+        gameOver.className = 'game-over';
+        gameOver.innerHTML = `
+                    <h2>GAME OVER</h2>
+                    <p>Puntuación final: ${this.score}</p>
+                    <button id="restart-btn" class="btn">REINICIAR JUEGO</button>
+                `;
+        this.board.appendChild(gameOver);
+
+        // Configurar botón para reiniciar juego
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            this.resetLevel();
+            gameOver.remove();
+        });
+    }
+
+    resetLevel() {
+        this.score = 0;
+        this.level = 1;
+        this.lives = MAP_CONFIG.initialLives;
+        this.scoreEl.textContent = this.score;
+        this.levelEl.textContent = this.level;
+        this.livesEl.textContent = this.lives;
+
+        // Reiniciar puntos
+        this.dots.forEach(dot => {
+            dot.collected = false;
+            dot.element.style.display = 'block';
+        });
+
+        this.powerDots.forEach(powerDot => {
+            powerDot.collected = false;
+            powerDot.element.style.display = 'block';
+        });
+
+        this.collectedDots = 0;
+
+        // Reiniciar velocidades
+        this.pacman.speed = MAP_CONFIG.pacmanSpeed[1];
+        this.ghosts.forEach(ghost => {
+            ghost.speed = MAP_CONFIG.ghostSpeed[1];
+        });
+
+        // Reiniciar posiciones
+        this.resetGame();
+
+        // Reiniciar bucle de juego
+        this.gameLoop = requestAnimationFrame(() => this.update());
+    }
+
+    getRandomDirection() {
+        const directions = [
+            { x: 1, y: 0 },   // Derecha
+            { x: -1, y: 0 },  // Izquierda
+            { x: 0, y: 1 },   // Abajo
+            { x: 0, y: -1 }   // Arriba
+        ];
+
+        return directions[Math.floor(Math.random() * directions.length)];
+    }
+}
+
+// Iniciar juego cuando se carga la página
+window.addEventListener('load', () => {
+    const game = new Game();
+});
+
